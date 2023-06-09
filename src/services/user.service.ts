@@ -1,11 +1,27 @@
 import { ServiceSchema } from 'moleculer'
-import DbService, { MoleculerDB } from 'moleculer-db'
-import MongooseDbAdapter from 'moleculer-db-adapter-mongoose'
-import { User } from '../models/user'
+import { Service } from 'moleculer'
+import { UserModel } from '../models/user'
+import mongooseService, {
+    MongooseService,
+    MongooseServiceSchema,
+} from '../scripts/mongoose.service'
+
+const model = {
+    [UserModel.name]: UserModel,
+}
+
+type ThisType = MongooseService<typeof model>
 
 export default {
     name: 'user',
-    version: 1,
-    mixins: [DbService],
-    adapter: new MongooseDbAdapter('mongodb://localhsot:27017/group'),
-} as ServiceSchema
+    mixins: [mongooseService],
+    actions: {
+        list: {
+            rest: 'GET /list',
+            handler(this: ThisType, ctx) {
+                this.logger.info(this.model)
+                return 'hello list'
+            },
+        },
+    },
+} as MongooseServiceSchema<typeof model>
